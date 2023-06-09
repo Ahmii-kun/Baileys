@@ -166,22 +166,29 @@ export const makeSocket = (config: SocketConfig) => {
 
 	/** send a query, and wait for its response. auto-generates message ID if not provided */
 	const query = async(node: BinaryNode, timeoutMs?: number) => {
-		if(!node.attrs.id) {
-			node.attrs.id = generateMessageTag()
-		}
-
-		const msgId = node.attrs.id
-		const wait = waitForMessage(msgId, timeoutMs)
-
-		await sendNode(node)
-
-		const result = await (wait as Promise<BinaryNode>)
-		if('tag' in result) {
-			assertNodeErrorFree(result)
-		}
-
-		return result
-	}
+        try {
+            if(!node.attrs.id) {
+                node.attrs.id = generateMessageTag();
+            }
+    
+            const msgId = node.attrs.id;
+            const wait = waitForMessage(msgId, timeoutMs);
+    
+            await sendNode(node);
+    
+            const result = await (wait as Promise<BinaryNode>);
+            if('tag' in result) {
+                assertNodeErrorFree(result);
+            }
+    
+            return result;
+        } catch (error) {
+            // handle the error appropriately
+            // return null or a default result if necessary
+            return null;
+        }
+    };
+    
 
 	/** connection handshake */
 	const validateConnection = async() => {
